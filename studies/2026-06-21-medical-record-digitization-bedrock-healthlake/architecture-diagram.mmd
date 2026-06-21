@@ -1,0 +1,24 @@
+flowchart LR
+    user[Healthcare staff / user] -->|Upload scanned PDF| s3in[Amazon S3 input bucket]
+    s3in -->|ObjectCreated event| s3event1[S3 event notification]
+    s3event1 --> bdalambda[BDA Trigger Lambda]
+    bdalambda -->|Start extraction job| bda[Amazon Bedrock Data Automation]
+    bda -->|Structured clinical JSON| s3out[Amazon S3 output bucket]
+    s3out -->|ObjectCreated event| s3event2[S3 output event notification]
+    s3event2 --> fhirlambda[FHIR Processor Lambda]
+    fhirlambda -->|Map extracted fields| fhir[FHIR R4 bundle / NDJSON]
+    fhir -->|Import job| healthlake[AWS HealthLake]
+    healthlake -->|FHIR R4 endpoints| api[FHIR API query layer]
+    api --> apps[Clinical apps / analytics / search]
+
+    cloudwatch[Amazon CloudWatch] -. logs and metrics .- bdalambda
+    cloudwatch -. logs and metrics .- fhirlambda
+    cloudwatch -. alarms .- healthlake
+    cloudtrail[AWS CloudTrail] -. API audit events .- bda
+    cloudtrail -. API audit events .- healthlake
+    iam[IAM roles and policies] -. least privilege access .- bdalambda
+    iam -. least privilege access .- fhirlambda
+    iam -. service permissions .- healthlake
+    kms[AWS KMS] -. encryption keys .- s3in
+    kms -. encryption keys .- s3out
+    kms -. encryption keys .- healthlake
