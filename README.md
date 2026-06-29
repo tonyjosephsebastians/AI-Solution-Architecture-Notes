@@ -1,6 +1,6 @@
 # GenAI Solution Architecture
 
-Daily architecture studies, diagrams, and case studies for building production-ready Generative AI applications using AWS, Azure, FastAPI, React, RAG, agents, and cloud-native services.
+Daily architecture studies, diagrams, and case studies for building production-ready Generative AI  using AWS, Azure, FastAPI, React, RAG, agents, and cloud-native services.
 
 ## Daily Architecture Studies
 
